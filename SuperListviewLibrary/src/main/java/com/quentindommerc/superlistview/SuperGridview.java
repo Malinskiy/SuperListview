@@ -105,4 +105,9 @@ public class SuperGridview extends BaseSuperAbsListview {
         getList().setAdapter(null);
     }
 
+    @Override
+    public boolean isSwipeToDismissSupported() {
+        return false;
+    }
+
 }

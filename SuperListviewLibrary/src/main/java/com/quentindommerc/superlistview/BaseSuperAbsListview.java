@@ -8,10 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ListAdapter;
+import android.widget.*;
 import com.quentindommerc.superlistview.superlistview.R;
 
 
@@ -247,7 +244,7 @@ public abstract class BaseSuperAbsListview extends FrameLayout implements AbsLis
      *
      * @return the listview adapter
      */
-    public android.widget.ListAdapter getAdapter() {
+    public ListAdapter getAdapter() {
         return mList.getAdapter();
     }
 
@@ -311,8 +308,34 @@ public abstract class BaseSuperAbsListview extends FrameLayout implements AbsLis
         mOnMoreListener = null;
     }
 
-
     public void setOnTouchListener(OnTouchListener listener) {
         mList.setOnTouchListener(listener);
+    }
+
+    public abstract boolean isSwipeToDismissSupported();
+
+    public void setupSwipeToDismiss(final SwipeDismissListViewTouchListener.DismissCallbacks listener, final boolean autoRemove) {
+        if(isSwipeToDismissSupported()) {
+            SwipeDismissListViewTouchListener touchListener =
+                    new SwipeDismissListViewTouchListener((ListView) mList, new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                        @Override
+                        public boolean canDismiss(int position) {
+                            return listener.canDismiss(position);
+                        }
+
+                        @Override
+                        public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                            if (autoRemove) {
+                                for (int position : reverseSortedPositions) {
+
+                                    ((ArrayAdapter) mList.getAdapter()).remove(mList.getAdapter().getItem(position));
+                                }
+                                ((ArrayAdapter) mList.getAdapter()).notifyDataSetChanged();
+                            }
+                            listener.onDismiss(listView, reverseSortedPositions);
+                        }
+                    });
+            mList.setOnTouchListener(touchListener);
+        }
     }
 }

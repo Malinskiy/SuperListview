@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import com.quentindommerc.superlistview.superlistview.R;
@@ -89,26 +88,9 @@ public class SuperListview extends BaseSuperAbsListview {
         getList().setAdapter(null);
     }
 
-    public void setupSwipeToDismiss(final SwipeDismissListViewTouchListener.DismissCallbacks listener, final boolean autoRemove) {
-        SwipeDismissListViewTouchListener touchListener =
-                new SwipeDismissListViewTouchListener((ListView) mList, new SwipeDismissListViewTouchListener.DismissCallbacks() {
-                    @Override
-                    public boolean canDismiss(int position) {
-                        return listener.canDismiss(position);
-                    }
-
-                    @Override
-                    public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-                        if (autoRemove) {
-                            for (int position : reverseSortedPositions) {
-
-                                ((ArrayAdapter)mList.getAdapter()).remove(mList.getAdapter().getItem(position));
-                            }
-                            ((ArrayAdapter)mList.getAdapter()).notifyDataSetChanged();
-                        }
-                        listener.onDismiss(listView, reverseSortedPositions);
-                    }
-                });
-        mList.setOnTouchListener(touchListener);
+    @Override
+    public boolean isSwipeToDismissSupported() {
+        return true;
     }
+
 }
